@@ -1,13 +1,27 @@
 package com.commentsold.livetest.ui.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.commentsold.livetest.data.remote.LiveTestService
+import com.commentsold.livetest.ui.base.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel : ViewModel() {
+@HiltViewModel
+class HomeViewModel  @Inject constructor(
+    private val service: LiveTestService
+) : BaseViewModel<HomeState>(initialState = HomeState()) {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
+    fun getProductList() {
+        viewModelScope.launch {
+            val list = service.getCollection()
+            list.body()?.let { itemList ->
+                setState { state ->
+                    state.copy(
+                        productList = itemList
+                    )
+                }
+            }
+        }
     }
-    val text: LiveData<String> = _text
 }

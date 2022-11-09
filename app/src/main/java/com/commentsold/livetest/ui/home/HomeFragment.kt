@@ -1,42 +1,37 @@
 package com.commentsold.livetest.ui.home
 
-import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.commentsold.livetest.databinding.FragmentHomeBinding
+import com.commentsold.livetest.ui.base.BaseFragment
+import com.commentsold.livetest.ui.base.autoCleaned
+import com.commentsold.livetest.utils.extensions.hiltLiveTestNavGraphViewModels
+import dagger.hilt.android.AndroidEntryPoint
 
-class HomeFragment : Fragment() {
+@AndroidEntryPoint
+class HomeFragment : BaseFragment<FragmentHomeBinding, HomeState, HomeViewModel>() {
 
-    private var _binding: FragmentHomeBinding? = null
+    override val viewModel: HomeViewModel by hiltLiveTestNavGraphViewModels()
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
+    private val liveProductAdapter by autoCleaned(
+        initializer = { HomeAdapter() }
+    )
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val homeViewModel =
-            ViewModelProvider(this)[HomeViewModel::class.java]
+    override fun initView() {
+        with(binding) {
 
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        val textView: TextView = binding.textHome
-        homeViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
         }
-        return root
+        viewModel.getProductList()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+
+    override fun render(state: HomeState) {
+        //TODO:
+        val foundList = state.productList
     }
+
+    override fun getViewBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentHomeBinding = FragmentHomeBinding.inflate(inflater, container, false)
 }
