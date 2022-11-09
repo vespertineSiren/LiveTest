@@ -23,6 +23,10 @@ class HomeAdapter : ListAdapter<ProductItem, HomeAdapter.ProductItemViewHolder>(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(productItem: ProductItem) {
+            //  TODO: Complete layout here.
+            with(binding) {
+
+            }
 
         }
     }
