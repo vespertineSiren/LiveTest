@@ -19,15 +19,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeState, HomeViewModel>
 
     override fun initView() {
         with(binding) {
-
+            liveProductRecyclerview.adapter = liveProductAdapter
         }
         viewModel.getProductList()
     }
 
 
     override fun render(state: HomeState) {
-        //TODO:
         val foundList = state.productList
+        liveProductAdapter.submitList(foundList)
     }
 
     override fun getViewBinding(

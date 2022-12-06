@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.commentsold.livetest.databinding.ItemProductBinding
 import com.commentsold.livetest.model.ProductItem
 
@@ -19,15 +20,16 @@ class HomeAdapter : ListAdapter<ProductItem, HomeAdapter.ProductItemViewHolder>(
     )
 
     inner class ProductItemViewHolder(
-        private val binding: ItemProductBinding
+        private val binding: ItemProductBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(productItem: ProductItem) {
-            //  TODO: Complete layout here.
             with(binding) {
-
+                waitlistProductDescText.text = productItem.description
+                waitlistProductName.text = productItem.product_name
+                waitlistProductPrice.text = productItem.image_height.toString()
+                itemWaitlistImageView.load(productItem.thumbnail)
             }
-
         }
     }
 
