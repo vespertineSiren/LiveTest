@@ -13,5 +13,22 @@ data class ProductItem(
     val product_name: String,
     val quantity: Int,
     val style: String,
-    val thumbnail: String
-)
+    val thumbnail: String,
+    val isSelected: Boolean = false
+) {
+    fun getColorVariants(): List<Variant> {
+        val returnList: MutableList<Variant> = mutableListOf()
+
+        //  TODO: Add logic here, Use inventory
+
+        return returnList
+    }
+
+    fun getSizeVariants(): List<Variant> {
+        val returnList: MutableList<Variant> = mutableListOf()
+
+        //  TODO: Add logic here, Use inventory
+
+        return returnList
+    }
+}
