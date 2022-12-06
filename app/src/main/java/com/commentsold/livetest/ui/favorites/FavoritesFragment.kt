@@ -1,42 +1,58 @@
 package com.commentsold.livetest.ui.favorites
 
-import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.commentsold.livetest.databinding.FragmentFavoritesBinding
+import com.commentsold.livetest.model.ProductItem
+import com.commentsold.livetest.ui.base.BaseFragment
+import com.commentsold.livetest.ui.base.autoCleaned
+import com.commentsold.livetest.utils.extensions.hiltLiveTestNavGraphViewModels
+import dagger.hilt.android.AndroidEntryPoint
 
-class FavoritesFragment : Fragment() {
+@AndroidEntryPoint
+class FavoritesFragment :
+    BaseFragment<FragmentFavoritesBinding, FavoritesState, FavoritesViewModel>() {
 
-    private var _binding: FragmentFavoritesBinding? = null
+    override val viewModel: FavoritesViewModel by hiltLiveTestNavGraphViewModels()
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
+    private val favoriteProductAdapter by autoCleaned(
+        initializer = { FavoritesAdapter(::onItemClicked) }
+    )
 
-    override fun onCreateView(
+    private val colorVariantAdapter by autoCleaned(
+        initializer = { VariantAdapter() }
+    )
+
+    private val sizeVariantAdapter by autoCleaned(
+        initializer = { VariantAdapter() }
+    )
+
+    override fun initView() {
+        with(binding) {
+            favoritesProductRecyclerView.adapter = favoriteProductAdapter
+            favoritesColorRecyclerView.adapter = colorVariantAdapter
+            favoritesSizeRecyclerView.adapter = sizeVariantAdapter
+        }
+
+        viewModel.getFavoritesList()
+    }
+
+    override fun render(state: FavoritesState) {
+        val favoritesList = state.favorites
+        val colorVariantsList = state.colorVariantList
+        val sizeVariantsList = state.sizeVariantList
+
+        if (favoritesList != null) favoriteProductAdapter.submitList(favoritesList)
+        colorVariantAdapter.submitList(colorVariantsList)
+        sizeVariantAdapter.submitList(sizeVariantsList)
+    }
+
+    private fun onItemClicked(selected: ProductItem) {
+        viewModel.setSelectProductItem(selected)
+    }
+
+    override fun getViewBinding(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val dashboardViewModel =
-            ViewModelProvider(this)[FavoritesViewModel::class.java]
-
-        _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        val textView: TextView = binding.textDashboard
-        dashboardViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
-        return root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+    ): FragmentFavoritesBinding = FragmentFavoritesBinding.inflate(inflater, container, false)
 }

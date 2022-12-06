@@ -1,13 +1,40 @@
 package com.commentsold.livetest.ui.favorites
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.commentsold.livetest.data.remote.LiveTestService
+import com.commentsold.livetest.model.ProductItem
+import com.commentsold.livetest.ui.base.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class FavoritesViewModel : ViewModel() {
+@HiltViewModel
+class FavoritesViewModel @Inject constructor(
+    private val service: LiveTestService
+) : BaseViewModel<FavoritesState>(initialState = FavoritesState()) {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is dashboard Fragment"
+    fun getFavoritesList() {
+        viewModelScope.launch {
+            service.getLargeCollection().body()?.let { favoritesList ->
+                setState { state ->
+                    state.copy(
+                        favorites = favoritesList
+                    )
+                }
+            }
+        }
     }
-    val text: LiveData<String> = _text
+
+    fun setSelectProductItem(selected: ProductItem) {
+        val colorVariants = selected.getColorVariants()
+        val sizeVariants = selected.getSizeVariants()
+
+        setState { state ->
+            state.copy(
+                selectedFavorite = selected,
+                colorVariantList = colorVariants,
+                sizeVariantList = sizeVariants
+            )
+        }
+    }
 }
